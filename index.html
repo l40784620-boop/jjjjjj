@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منتدى طلاب BTEC</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Orbitron:wght@500;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #00f3ff;
+            --secondary-color: #bc13fe;
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.8);
+            --text-light: #e2e8f0;
+            --liked-color: #ff2d55;
+            --btec-color: #28a745; /* لون جديد لتخصصات BTEC */
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Cairo', sans-serif;
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(188, 19, 254, 0.08) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.08) 0%, transparent 25%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* General Styles */
+        .brand-font { font-family: 'Orbitron', sans-serif; letter-spacing: 1px; }
+        .hidden { display: none !important; }
+        .pointer { cursor: pointer; }
+
+        /* Glass Cards */
+        .tech-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        /* User and Post Elements */
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #fff;
+            margin-left: 12px;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+            flex-shrink: 0;
+        }
+        .post-header { display: flex; align-items: center; margin-bottom: 15px; }
+        .post-actions { border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 10px; margin-top: 15px; display: flex; gap: 20px; }
+        .action-btn { background: transparent; border: none; color: #94a3b8; transition: 0.2s; font-size: 0.95rem; padding: 5px 10px; border-radius: 8px; }
+        .action-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .action-btn.liked { color: var(--liked-color); }
+        .action-btn.liked i { animation: pop 0.3s ease; }
+        @keyframes pop { 50% { transform: scale(1.4); } }
+        
+        /* Comments Section */
+        .comments-container { margin-top: 15px; background: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 15px; display: none; }
+        .comments-container.show { display: block; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .single-comment { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; font-size: 0.9rem; }
+        .single-comment:last-child { border-bottom: none; }
+
+        /* Forms & Buttons */
+        .form-control { background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; color: white; }
+        .form-control:focus { background: rgba(15, 23, 42, 0.8); color: white; border-color: var(--primary-color); box-shadow: 0 0 0 0.2rem rgba(0, 243, 255, 0.15); }
+        .btn-tech { background: linear-gradient(90deg, var(--secondary-color), var(--primary-color)); border: none; color: white; font-weight: 600; }
+        .btn-tech:hover { filter: brightness(1.2); color: white; }
+
+        /* Navbar */
+        .navbar { background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid rgba(0, 243, 255, 0.3); }
+        .nav-link.active { color: var(--primary-color) !important; font-weight: bold; }
+
+        /* Modal Customization */
+        .modal-content {
+            background: var(--bg-card);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+        }
+        .modal-header { border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .modal-footer { border-top: 1px solid rgba(255, 255, 255, 0.1); }
+        
+        /* Multi-select styling */
+        select[multiple] { height: auto; }
+        select[multiple] option { padding: 8px 15px; cursor: pointer; transition: background-color 0.2s; }
+        select[multiple] option:checked { background-color: var(--primary-color); color: var(--bg-dark); font-weight: bold; }
+        
+        /* Founder/About Section Styles */
+        .founder-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+            border: 2px solid var(--primary-color);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.2);
+            text-align: center;
+        }
+        .founder-avatar-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--secondary-color);
+            box-shadow: 0 0 15px var(--secondary-color);
+            margin-bottom: 20px;
+        }
+        .social-link {
+            color: var(--primary-color);
+            transition: color 0.2s;
+            font-size: 1.5rem;
+            margin: 0 10px;
+        }
+        .social-link:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Welcome Page Styles */
+        #welcome-page {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        .welcome-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+            border: 2px solid var(--secondary-color);
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 0 40px rgba(188, 19, 254, 0.4);
+            max-width: 700px;
+            width: 100%;
+        }
+        .welcome-title {
+            font-size: 3rem;
+            color: var(--primary-color);
+            text-shadow: 0 0 15px var(--primary-color);
+        }
+        .specialization-badge {
+            background-color: var(--btec-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top hidden" id="main-nav">
+        <div class="container">
+            <a class="navbar-brand brand-font" href="#" onclick="showSection('posts-section', document.querySelector('#navbarNav .nav-link:nth-child(1)'))"><i class="fas fa-network-wired me-2"></i>BTEC HUB</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#" onclick="showSection('posts-section', this)"><i class="fas fa-home me-1"></i> الرئيسية</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('help-section', this)"><i class="fas fa-hands-helping me-1"></i> طلبات المساعدة</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('profile-section', this)"><i class="fas fa-user-circle me-1"></i> حسابي</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('about-founder-section', this)"><i class="fas fa-info-circle me-1"></i> حول المؤسس</a></li> 
+                    <li class="nav-item"><button class="btn btn-outline-info ms-2 me-2" data-bs-toggle="modal" data-bs-target="#opinionModal"><i class="far fa-star me-1"></i> آراء الطلاب</button></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <div class="user-avatar ms-2" style="width:35px; height:35px; font-size:0.9rem;" id="nav-avatar">U</div>
+                    <span class="text-white me-2 small" id="nav-username"></span>
+                    <button class="btn btn-outline-danger btn-sm me-2" id="logout-btn">خروج</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="welcome-page">
+        <div class="welcome-card">
+            <h1 class="brand-font welcome-title mb-4">منتدى طلاب BTEC</h1>
+            <h3 class="text-white mb-4">ملتقى طلاب BTEC للابتكار والتعاون</h3>
+            <p class="lead text-light mb-4">
+                <strong>هدفنا:</strong> بناء مجتمع داعم لطلاب BTEC، حيث نتبادل الخبرات والمعرفة في جميع التخصصات، ونساعد بعضنا البعض في إنجاز وحدات المشاريع والواجبات.
+            </p>
+            <p class="text-muted mb-5">
+                نؤمن بأن التعاون هو مفتاح الابتكار. انضم إلينا اليوم لتجد شريكك في المشروع القادم أو تحصل على إجابة لسؤالك التقني المعقد.
+            </p>
+            <button class="btn btn-tech btn-lg px-5" onclick="goToForum()">
+                انطلق نحو المنتدى <i class="fas fa-arrow-left ms-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="container d-flex align-items-center justify-content-center min-vh-100 hidden" id="auth-container">
+        <div class="tech-card p-5 text-center" style="max-width: 450px; width: 100%;">
+            <h2 class="mb-4 brand-font text-info">بوابة الطالب</h2>
+            <form id="login-form">
+                <input type="email" class="form-control mb-3" id="login-email" placeholder="البريد الجامعي / الشخصي" required>
+                <input type="password" class="form-control mb-3" id="login-password" placeholder="كلمة المرور" required>
+                <button type="submit" class="btn btn-tech w-100 py-2 mb-3">دخول</button>
+                <p class="text-danger small" id="auth-error-message"></p>
+                <p class="text-muted small pointer" onclick="toggleAuth('register')">ليس لديك حساب؟ <span class="text-info" style="cursor:pointer">أنشئ حساباً</span></p>
+            </form>
+
+            <form id="register-form" class="hidden">
+                <input type="text" class="form-control mb-3" id="reg-name" placeholder="الاسم الثنائي / المستعار" required>
+                <select class="form-control mb-3" id="reg-specialization" required>
+                    <option value="" disabled selected>اختر تخصصك في BTEC *</option>
+                    </select>
+                <input type="email" class="form-control mb-3" id="reg-email" placeholder="البريد الإلكتروني" required>
+                <input type="password" class="form-control mb-3" id="reg-password" placeholder="كلمة المرور (6 أحرف أو أكثر)" required>
+                <button type="submit" class="btn btn-tech w-100 py-2 mb-3">تسجيل جديد</button>
+                <p class="text-danger small" id="reg-error-message"></p>
+                <p class="text-muted small pointer" onclick="toggleAuth('login')">لديك حساب؟ <span class="text-info" style="cursor:pointer">سجل دخول</span></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="container hidden" id="app-container" style="margin-top: 80px; padding-bottom: 50px;">
+        
+        <div id="posts-section">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    
+                    <div class="tech-card p-4 mb-4 d-flex align-items-center">
+                        <div class="user-avatar" id="post-box-avatar">?</div>
+                        <p class="m-0 me-auto text-muted pointer" data-bs-toggle="modal" data-bs-target="#postModal" style="flex-grow: 1;">
+                           ما الذي تفكر فيه اليوم؟ انقر هنا للمشاركة...
+                        </p>
+                        <button class="btn btn-tech ms-3" data-bs-toggle="modal" data-bs-target="#postModal">
+                            <i class="fas fa-plus me-1"></i> نشر
+                        </button>
+                    </div>
+
+                    <div class="mb-4 d-flex align-items-center">
+                        <h3 class="brand-font m-0 text-info">المنشورات</h3>
+                        <select class="form-control ms-3" id="filter-specialization" style="width: 250px;" onchange="filterPosts(this.value)">
+                            <option value="">جميع التخصصات</option>
+                            </select>
+                    </div>
+                    <div id="posts-list">
+                        <div class="text-center mt-5 text-muted"><i class="fas fa-circle-notch fa-spin fa-2x"></i><br>جاري تحميل البيانات...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="help-section" class="hidden">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="tech-card p-4 mb-4 d-flex justify-content-between align-items-center">
+                        <h4 class="m-0 brand-font text-info">هل تحتاج إلى مساعدة؟</h4>
+                        <button class="btn btn-tech" data-bs-toggle="modal" data-bs-target="#helpModal">
+                            <i class="fas fa-plus me-1"></i> أطلب المساعدة الآن!
+                        </button>
+                    </div>
+                    
+                    <h3 class="text-center brand-font mb-4 text-info">طلبات الواجبات والمهام المفتوحة</h3>
+                    <div id="help-requests-list">
+                        <div class="text-center mt-5 text-muted"><i class="fas fa-circle-notch fa-spin fa-2x"></i><br>جاري تحميل الطلبات...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="opinions-section" class="hidden"></div> 
+
+        <div id="profile-section" class="hidden">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="tech-card p-5 text-center">
+                        <div class="user-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;" id="profile-avatar-lg"></div>
+                        <h3 id="profile-name-display"></h3>
+                        <p class="text-muted" id="profile-email-display"></p>
+                        <div class="specialization-badge mb-4" id="profile-specialization-display"></div>
+                        <hr class="border-secondary my-4">
+                        <form onsubmit="updateProfileData(event)">
+                            <div class="mb-3 text-start">
+                                <label class="small text-muted">تحديث الاسم</label>
+                                <input type="text" id="edit-name" class="form-control">
+                            </div>
+                            <div class="mb-3 text-start">
+                                <label class="small text-muted">تعديل التخصص</label>
+                                <select class="form-control" id="edit-specialization">
+                                    </select>
+                            </div>
+                            <button class="btn btn-tech w-100 mb-3">حفظ التغييرات</button>
+                            <p class="text-success mt-2 small hidden" id="profile-update-success">تم تحديث البيانات بنجاح!</p>
+                        </form>
+
+                        <hr class="border-secondary my-4">
+
+                        <h5 class="text-info brand-font mb-3">توثيق الحساب</h5>
+                        <div id="verification-status" class="mb-3 text-start">
+                            <p id="verif-message" class="small"></p>
+                            <button class="btn btn-outline-primary w-100" id="request-verif-btn" onclick="requestVerification(event)">
+                                <i class="fas fa-certificate me-2"></i> طلب التوثيق الآن
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="about-founder-section" class="hidden">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <h3 class="text-center brand-font mb-5 text-warning">نبذة عن صاحب المنتدى</h3>
+                    <div class="founder-card">
+                        <img src="587076927_17905377279290100_5164046791455981135_n (1).jpg" alt="صورة المؤسس" class="founder-avatar-img">
+                        <h2 class="brand-font text-white mb-2">ليث رباع </h2>
+                        <h5 class="text-info mb-4">مؤسس منتدى طلاب BTEC</h5>
+                        <p class="text-light lead">
+                            أهلاً بك في منتدى طلاب التقنية. أنا محمد، مهندس برمجيات وشغوف بالتعليم الذاتي والمشاريع التعاونية. أسست هذا المنصة لإيماني بأن أفضل طريقة للتعلم هي عبر المشاركة وتبادل الخبرات بين الطلاب.
+                        </p>
+                        <p class="text-light mb-4">
+                            هدفي هو توفير بيئة داعمة ومحفزة لكل طالب يطمح للتميز في المجال التقني. لا تتردد في المشاركة وطرح الأسئلة، فالمستقبل يبدأ هنا.
+                        </p>
+                        <hr class="border-secondary my-4">
+                        <div class="d-flex justify-content-center">
+                            <a href="#" class="social-link" title="GitHub"><i class="fab fa-github"></i></a>
+                            <a href="#" class="social-link" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="social-link" title="Twitter/X"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-info brand-font" id="postModalLabel"><i class="fas fa-pencil-alt me-2"></i> إنشاء منشور جديد</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex mb-3 align-items-center">
+                        <div class="user-avatar" id="modal-post-avatar">?</div>
+                        <span class="ms-3 text-white fw-bold" id="modal-post-username">المستخدم</span>
+                    </div>
+                    <select class="form-control mb-3" id="modal-post-specialization" required>
+                        <option value="" disabled selected>اختر تخصص المنشور *</option>
+                        </select>
+                    <input type="text" id="modal-post-title" class="form-control mb-3" placeholder="عنوان الموضوع المثير..." required>
+                    <textarea id="modal-post-content" class="form-control" rows="5" placeholder="شاركنا معلومة، سؤال، أو فكرة برمجية..." required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-tech" onclick="createPost(true)">نشر <i class="fas fa-paper-plane ms-1"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-success brand-font" id="helpModalLabel"><i class="fas fa-question-circle me-2"></i> طلب مساعدة في واجب/مهمة</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="modal-help-unit" class="form-control mb-3" placeholder="اسم الوحدة/المادة المطلوبة (مثال: Unit 3: Computing Science)" required>
+                    <textarea type="text" id="modal-help-description" class="form-control mb-3" rows="4" placeholder="وصف مفصل للمهمة/الواجب ونوع المساعدة المطلوبة..." required></textarea>
+                    
+                    <label class="small text-muted mb-1">تخصص المهمة</label>
+                    <select class="form-control mb-3" id="modal-help-specialization" required>
+                        <option value="" disabled selected>اختر تخصص المهمة *</option>
+                        </select>
+
+                    <input type="text" id="modal-help-contact" class="form-control" placeholder="طريقة التواصل معك (بريد، رقم واتساب، تيليجرام...)" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-tech" onclick="createHelpRequest(true)">نشر طلب المساعدة <i class="fas fa-lightbulb ms-1"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="opinionModal" tabindex="-1" aria-labelledby="opinionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-secondary brand-font" id="opinionModalLabel"><i class="fas fa-clipboard-list me-2"></i> آراء الطلاب حول المنصة</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <h6 class="text-info">شاركنا رأيك</h6>
+                            <div class="tech-card p-4">
+                                <form id="opinion-form-modal">
+                                    <select class="form-control mb-2" id="opinion-rating-modal">
+                                        <option value="5">⭐⭐⭐⭐⭐ ممتاز</option>
+                                        <option value="4">⭐⭐⭐⭐ جيد جداً</option>
+                                        <option value="3">⭐⭐⭐ جيد</option>
+                                        <option value="2">⭐⭐ متوسط</option>
+                                        <option value="1">⭐ ضعيف</option>
+                                    </select>
+                                    <textarea id="opinion-text-modal" class="form-control mb-3" placeholder="رأيك يهمنا..."></textarea>
+                                    <button type="button" class="btn btn-outline-info w-100" onclick="submitOpinion(true)">إرسال</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                             <h6 class="text-info">الآراء السابقة</h6>
+                            <div id="opinions-list" class="row">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, arrayUnion, arrayRemove, getDoc, setDoc, deleteDoc, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // *** يجب استبدال هذه ببيانات تكوين Firebase الخاصة بك ***
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNXh0QNPlOFWLVNcmUYlzyvdfPhPnHcAE",
+            authDomain: "talp-e7578.firebaseapp.com",
+            projectId: "talp-e7578",
+            storageBucket: "talp-e7578.firebasestorage.app",
+            messagingSenderId: "790637359024",
+            appId: "1:790637359024:web:a3925ad98e87d4cec9b075",
+            measurementId: "G-B019EHBYJQ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global State
+        let currentUser = null;
+        const userProfileCache = {}; 
+        let currentPostFilter = ''; // NEW: Filter for posts
+
+        // NEW: BTEC Specializations List
+        const BTEC_SPECIALIZATIONS = [
+            "الهندسة",
+            "تكنولوجيا المعلومات",
+            "الفنون والتصميم",
+            "السياحة والسفر",
+            "إدراة الاعمال",
+            "الوسائط الإبداعية",
+            "الزراعة",
+            "الضيافة",
+            "الشعر والتجميل"
+        ];
+        
+        // NEW: Function to populate specializations in all selects
+        function populateSpecializations() {
+            const selects = [
+                document.getElementById('reg-specialization'),
+                document.getElementById('edit-specialization'),
+                document.getElementById('modal-post-specialization'),
+                document.getElementById('modal-help-specialization'),
+                document.getElementById('filter-specialization')
+            ].filter(el => el); // Filter out nulls if elements are not loaded yet (e.g., modals)
+
+            BTEC_SPECIALIZATIONS.forEach(spec => {
+                selects.forEach(select => {
+                    const option = document.createElement('option');
+                    option.value = spec;
+                    option.textContent = spec;
+                    
+                    if (select.id !== 'reg-specialization' && select.id !== 'filter-specialization') {
+                        // Only clone for registration and filter selects
+                        select.appendChild(option.cloneNode(true));
+                    } else if (select.id === 'reg-specialization') {
+                        // For reg, append the original or cloned options
+                        select.appendChild(option.cloneNode(true));
+                    } else if (select.id === 'filter-specialization') {
+                         select.appendChild(option.cloneNode(true));
+                    }
+                });
+            });
+        }
+        
+        // Initial population of specialization fields
+        document.addEventListener('DOMContentLoaded', populateSpecializations);
+
+
+        // --- وظيفة مساعدة: جلب بيانات المستخدم من Firestore ---
+        async function getUserProfile(uid) {
+            if (userProfileCache[uid] && userProfileCache[uid].lastFetch > Date.now() - 60000) { 
+                return userProfileCache[uid];
+            }
+
+            const docRef = doc(db, "users", uid);
+            const docSnap = await getDoc(docRef);
+            
+            let profile = { 
+                isVerified: false, 
+                isBlocked: false, 
+                displayName: 'مستخدم محذوف', 
+                specialization: 'لم يتم التحديد', // NEW: Default specialization
+                isRequestPending: false 
+            };
+            
+            if (docSnap.exists()) {
+                profile = docSnap.data();
+            }
+            
+            const verifReqRef = doc(db, "verificationRequests", uid);
+            const verifReqSnap = await getDoc(verifReqRef);
+            
+            profile.isRequestPending = verifReqSnap.exists();
+            profile.lastFetch = Date.now(); 
+            userProfileCache[uid] = profile;
+            return profile;
+        }
+
+        // --- Auth Listeners ---
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            const authDiv = document.getElementById('auth-container');
+            const appDiv = document.getElementById('app-container');
+            const nav = document.getElementById('main-nav');
+            const welcomeDiv = document.getElementById('welcome-page');
+            const authError = document.getElementById('auth-error-message');
+            authError.textContent = ''; 
+
+            if (user) {
+                const profile = await getUserProfile(user.uid);
+                
+                if (profile.isBlocked) {
+                    alert("⚠️ تم حظر حسابك من قبل الإدارة. يرجى التواصل مع الدعم.");
+                    await signOut(auth); 
+                    return; 
+                }
+                
+                // Load App UI
+                welcomeDiv.classList.add('hidden'); 
+                authDiv.classList.add('hidden');
+                appDiv.classList.remove('hidden');
+                nav.classList.remove('hidden');
+                
+                // Update UI
+                updateUserUI(user, profile); 
+                loadPosts(); // Load posts with default filter
+                loadHelpRequests(); // UPDATED: Load help requests
+                loadOpinions();
+                
+                // Update post box UI
+                const name = user.displayName || user.email.split('@')[0];
+                const initial = name.charAt(0).toUpperCase();
+
+                document.getElementById('modal-post-username').textContent = name;
+                document.getElementById('modal-post-avatar').textContent = initial;
+                document.getElementById('post-box-avatar').textContent = initial;
+                
+                // NEW: Populate specialization selects again in case modals loaded late
+                populateSpecializations();
+
+            } else {
+                // Logged Out UI
+                appDiv.classList.add('hidden');
+                nav.classList.add('hidden');
+                
+                // Ensure welcome page is visible only if we are not on the login/register form
+                if(authDiv.classList.contains('hidden')) {
+                     welcomeDiv.classList.remove('hidden');
+                } else {
+                     welcomeDiv.classList.add('hidden');
+                }
+                
+                currentUser = null;
+                Object.keys(userProfileCache).forEach(key => delete userProfileCache[key]);
+            }
+        });
+
+        // --- Go to Forum function ---
+        window.goToForum = () => {
+            document.getElementById('welcome-page').classList.add('hidden');
+            document.getElementById('auth-container').classList.remove('hidden');
+        };
+
+        // --- تحديث عناصر الواجهة بشارة التوثيق والتخصص ---
+        function updateUserUI(user, profile) {
+            const name = user.displayName || user.email.split('@')[0];
+            const initial = name.charAt(0).toUpperCase();
+            const isVerified = profile.isVerified;
+            const isRequestPending = profile.isRequestPending;
+            const specialization = profile.specialization || 'لم يتم التحديد'; // NEW: Get specialization
+            
+            const verifiedBadge = isVerified ? 
+                `<i class="fas fa-check-circle ms-1" style="color: #00acee; font-size: 1rem;" title="حساب موثق"></i>` 
+                : '';
+            
+            let verifMessage, verifBtnText, verifBtnClass, verifBtnDisabled;
+
+            if (isVerified) {
+                verifMessage = `<i class="fas fa-check-double text-success me-1"></i> حسابك **موثق** بالفعل.`;
+                verifBtnText = 'تم التوثيق';
+                verifBtnClass = 'btn-success';
+                verifBtnDisabled = true;
+            } else if (isRequestPending) {
+                verifMessage = `<i class="fas fa-clock text-warning me-1"></i> طلب توثيقك قيد المراجعة.`;
+                verifBtnText = 'طلب قيد المراجعة...';
+                verifBtnClass = 'btn-outline-warning';
+                verifBtnDisabled = true;
+            } else {
+                verifMessage = `<i class="fas fa-info-circle text-muted me-1"></i> قم بتوثيق حسابك للتميز.`;
+                verifBtnText = 'طلب التوثيق الآن';
+                verifBtnClass = 'btn-outline-primary';
+                verifBtnDisabled = false;
+            }
+                
+            document.getElementById('nav-avatar').textContent = initial;
+            document.getElementById('nav-username').innerHTML = name + verifiedBadge; 
+            document.getElementById('profile-avatar-lg').textContent = initial;
+            
+            document.getElementById('profile-name-display').innerHTML = name + verifiedBadge;
+            document.getElementById('profile-email-display').textContent = user.email;
+            document.getElementById('profile-specialization-display').textContent = specialization; // NEW: Display specialization
+            
+            document.getElementById('edit-name').value = name;
+            // NEW: Set specialization in edit form
+            document.getElementById('edit-specialization').value = specialization; 
+            
+            // تحديث حالة التوثيق في قسم حسابي
+            const btn = document.getElementById('request-verif-btn');
+            document.getElementById('verif-message').innerHTML = verifMessage;
+            btn.textContent = verifBtnText;
+            btn.className = `btn ${verifBtnClass} w-100`;
+            btn.disabled = verifBtnDisabled;
+        }
+
+        // --- Auth Operations ---
+        window.toggleAuth = (mode) => {
+            document.getElementById('auth-error-message').textContent = '';
+            document.getElementById('reg-error-message').textContent = '';
+            if(mode === 'register') {
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('register-form').classList.remove('hidden');
+            } else {
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('register-form').classList.add('hidden');
+            }
+        };
+        
+        // Login (unchanged)
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorElement = document.getElementById('auth-error-message');
+            errorElement.textContent = '';
+            try {
+                await signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value);
+            } catch(err) { errorElement.textContent = "خطأ في الدخول: " + err.message; }
+        });
+
+        // Register (UPDATED to save specialization)
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorElement = document.getElementById('reg-error-message');
+            errorElement.textContent = '';
+            const name = document.getElementById('reg-name').value;
+            const specialization = document.getElementById('reg-specialization').value; // NEW
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            
+            if (!specialization) {
+                 errorElement.textContent = "يرجى اختيار التخصص.";
+                 return;
+            }
+
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, password);
+                const user = cred.user;
+                await updateProfile(user, { displayName: name });
+                
+                // إنشاء وثيقة المستخدم في Firestore
+                await setDoc(doc(db, "users", user.uid), {
+                    displayName: name,
+                    email: email,
+                    uid: user.uid,
+                    specialization: specialization, // NEW: Save specialization
+                    isVerified: false, 
+                    isBlocked: false, 
+                    createdAt: serverTimestamp()
+                });
+                
+                alert("تم إنشاء الحساب بنجاح. سيتم تسجيل دخولك.");
+            } catch(err) { errorElement.textContent = "خطأ في التسجيل: " + err.message; }
+        });
+
+        document.getElementById('logout-btn').onclick = () => signOut(auth);
+
+        // --- Navigation ---
+        window.showSection = (id, el) => {
+            // UPDATED to include 'help-section'
+            ['posts-section', 'profile-section', 'help-section', 'about-founder-section'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            document.querySelectorAll('#navbarNav .nav-link').forEach(n => n.classList.remove('active'));
+            if(el) el.classList.add('active');
+            
+            if (id === 'help-section') {
+                loadHelpRequests(); 
+            }
+        };
+        
+        // --- وظيفة إرسال طلب التوثيق (unchanged) ---
+        window.requestVerification = async (e) => {
+            e.preventDefault();
+            if (!currentUser) return alert("يرجى تسجيل الدخول أولاً.");
+
+            const btn = document.getElementById('request-verif-btn');
+            btn.disabled = true;
+            btn.textContent = 'جاري الإرسال...';
+            
+            try {
+                const docRef = doc(db, "verificationRequests", currentUser.uid);
+                
+                const snap = await getDoc(docRef);
+                if (snap.exists()) {
+                    alert("لقد قمت بالفعل بإرسال طلب توثيق وهو قيد المراجعة.");
+                } else {
+                    await setDoc(docRef, {
+                        uid: currentUser.uid,
+                        email: currentUser.email,
+                        displayName: currentUser.displayName,
+                        status: 'pending', 
+                        requestedAt: serverTimestamp()
+                    });
+                    alert("✅ تم إرسال طلب التوثيق بنجاح! سيتم مراجعته قريباً.");
+                }
+
+                const profile = await getUserProfile(currentUser.uid);
+                updateUserUI(currentUser, profile);
+
+            } catch (error) {
+                console.error("Error requesting verification:", error);
+                alert("حدث خطأ أثناء إرسال طلب التوثيق.");
+                btn.disabled = false;
+                btn.textContent = 'طلب التوثيق الآن';
+            }
+        };
+
+
+        // --- POSTS & LIKES & COMMENTS SYSTEM ---
+
+        window.createPost = async (isModal = false) => {
+            const titleElement = document.getElementById('modal-post-title');
+            const contentElement = document.getElementById('modal-post-content');
+            const specializationElement = document.getElementById('modal-post-specialization'); // NEW
+            
+            const title = titleElement.value;
+            const content = contentElement.value;
+            const specialization = specializationElement.value; // NEW
+            
+            if(!title || !content || !specialization) return alert("يرجى ملء جميع الحقول واختيار التخصص");
+
+            try {
+                await addDoc(collection(db, "posts"), {
+                    title, content, specialization, // NEW: Save specialization
+                    author: currentUser.displayName,
+                    uid: currentUser.uid, 
+                    likes: [], 
+                    timestamp: serverTimestamp()
+                });
+                
+                titleElement.value = '';
+                contentElement.value = '';
+                specializationElement.value = '';
+                if(isModal) {
+                    const postModal = bootstrap.Modal.getInstance(document.getElementById('postModal'));
+                    if(postModal) postModal.hide();
+                }
+            } catch(err) { console.error(err); alert("حدث خطأ أثناء النشر."); }
+        };
+
+        // NEW: Filter Posts Function
+        window.filterPosts = (specialization) => {
+            currentPostFilter = specialization;
+            loadPosts();
+        };
+
+        function loadPosts() {
+            let q = collection(db, "posts");
+            
+            // Apply filter if selected
+            if (currentPostFilter) {
+                q = query(q, where("specialization", "==", currentPostFilter), orderBy("timestamp", "desc"));
+            } else {
+                 q = query(q, orderBy("timestamp", "desc"));
+            }
+            
+            onSnapshot(q, async (snapshot) => {
+                const list = document.getElementById('posts-list');
+                list.innerHTML = '';
+                
+                if (snapshot.empty) {
+                     list.innerHTML = `<div class="text-center mt-5 text-muted"><i class="fas fa-box-open fa-2x"></i><br>لا يوجد منشورات حالياً ${currentPostFilter ? `في تخصص "${currentPostFilter}"` : ''}، كن أول من ينشر!</div>`;
+                    return;
+                }
+
+                const postPromises = snapshot.docs.map(async (docSnap) => {
+                    const post = docSnap.data();
+                    const pid = docSnap.id;
+                    
+                    const authorProfile = await getUserProfile(post.uid); 
+                    const postAuthorName = authorProfile.displayName || post.author; 
+                    const isVerified = authorProfile.isVerified;
+                    const verifiedBadge = isVerified ? 
+                        `<i class="fas fa-check-circle ms-1" style="color: #00acee; font-size: 0.9em;" title="حساب موثق"></i>` 
+                        : '';
+                        
+                    const isLiked = post.likes && post.likes.includes(currentUser.uid);
+                    const likeCount = post.likes ? post.likes.length : 0;
+                    const date = post.timestamp ? post.timestamp.toDate().toLocaleDateString('ar-EG') : '';
+                    const initial = postAuthorName ? postAuthorName.charAt(0).toUpperCase() : '?';
+
+                    return `
+                        <div class="tech-card p-4 mb-3">
+                            <div class="post-header">
+                                <div class="user-avatar">${initial}</div>
+                                <div class="ms-3">
+                                    <h5 class="m-0 text-white">${postAuthorName} ${verifiedBadge}</h5>
+                                    <small class="text-muted" style="font-size:0.75rem">${date}</small>
+                                </div>
+                            </div>
+                            <div class="specialization-badge mb-3"><i class="fas fa-microchip me-1"></i> ${post.specialization}</div>
+                            
+                            <h5 class="text-info fw-bold">${post.title}</h5>
+                            <p class="text-light">${post.content}</p>
+                            
+                            <div class="post-actions">
+                                <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${pid}')">
+                                    <i class="${isLiked ? 'fas' : 'far'} fa-heart me-1"></i> 
+                                    <span>${likeCount}</span>
+                                </button>
+                                <button class="action-btn" onclick="toggleCommentBox('${pid}')">
+                                    <i class="far fa-comment-alt me-1"></i> تعليق
+                                </button>
+                                ${currentUser && (currentUser.uid === post.uid) ?
+                                    `<button class="btn btn-sm text-danger" onclick="deletePost('${pid}')">
+                                        <i class="fas fa-trash-alt"></i> حذف
+                                    </button>`
+                                    : ''
+                                }
+                            </div>
+
+                            <div id="comments-box-${pid}" class="comments-container">
+                                <div id="comments-list-${pid}" class="mb-3"></div>
+                                <div class="d-flex">
+                                    <input type="text" id="input-comment-${pid}" class="form-control form-control-sm" placeholder="اكتب تعليقاً...">
+                                    <button class="btn btn-sm btn-tech ms-2" onclick="addComment('${pid}')"><i class="fas fa-paper-plane"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                const postHtml = await Promise.all(postPromises);
+                list.innerHTML = postHtml.join('');
+
+                snapshot.forEach(docSnap => {
+                    loadComments(docSnap.id);
+                });
+            });
+        }
+
+        window.toggleLike = async (postId) => {
+            const pRef = doc(db, "posts", postId);
+            
+            const snap = await getDoc(pRef);
+            if(snap.exists()){
+                const data = snap.data();
+                const likes = data.likes || [];
+                if(likes.includes(currentUser.uid)){
+                    await updateDoc(pRef, { likes: arrayRemove(currentUser.uid) });
+                } else {
+                    await updateDoc(pRef, { likes: arrayUnion(currentUser.uid) });
+                }
+            }
+        };
+
+        window.deletePost = async (postId) => {
+            if (!currentUser || !confirm("هل أنت متأكد من حذف هذا المنشور؟")) return;
+
+            try {
+                const postRef = doc(db, "posts", postId);
+                const postSnap = await getDoc(postRef);
+
+                if (postSnap.exists() && postSnap.data().uid === currentUser.uid) {
+                    await deleteDoc(postRef);
+                } else {
+                    alert("ليس لديك صلاحية لحذف هذا المنشور.");
+                }
+            } catch (error) {
+                console.error("Error deleting post:", error);
+                alert("حدث خطأ أثناء الحذف.");
+            }
+        };
+
+        // --- COMMENTS SYSTEM (loadComments/addComment updated to use latest name/badge) ---
+        window.toggleCommentBox = (pid) => {
+            const box = document.getElementById(`comments-box-${pid}`);
+            box.classList.toggle('show');
+        };
+
+        window.addComment = async (pid) => {
+            const input = document.getElementById(`input-comment-${pid}`);
+            const text = input.value;
+            if(!text) return;
+
+            try {
+                await addDoc(collection(db, "posts", pid, "comments"), {
+                    text: text,
+                    author: currentUser.displayName, 
+                    uid: currentUser.uid, 
+                    timestamp: serverTimestamp()
+                });
+                input.value = '';
+            } catch(e) { console.error(e); }
+        };
+
+        function loadComments(pid) {
+            const q = query(collection(db, "posts", pid, "comments"), orderBy("timestamp", "asc"));
+            onSnapshot(q, async (snapshot) => {
+                const container = document.getElementById(`comments-list-${pid}`);
+                if(!container) return; 
+                container.innerHTML = '';
+                
+                if(snapshot.empty) {
+                    container.innerHTML = '<small class="text-muted">كن أول المعلقين</small>';
+                    return;
+                }
+
+                const commentPromises = snapshot.docs.map(async (d) => {
+                    const c = d.data();
+                    
+                    const commentAuthorProfile = await getUserProfile(c.uid);
+                    const commentAuthorName = commentAuthorProfile.displayName || c.author;
+                    const isVerified = commentAuthorProfile.isVerified;
+                    const verifiedBadge = isVerified ? 
+                        `<i class="fas fa-check-circle ms-1" style="color: #00acee; font-size: 0.8em;" title="حساب موثق"></i>` 
+                        : '';
+
+                    return `
+                        <div class="single-comment">
+                            <strong class="text-info" style="font-size:0.8rem">${commentAuthorName} ${verifiedBadge}</strong>: 
+                            <span class="text-light">${c.text}</span>
+                        </div>
+                    `;
+                });
+                
+                const commentHtml = await Promise.all(commentPromises);
+                container.innerHTML = commentHtml.join('');
+            });
+        }
+        
+        // --- HELP REQUESTS SYSTEM (Formerly Projects) ---
+
+        window.createHelpRequest = async (isModal = false) => {
+            const unit = document.getElementById('modal-help-unit').value;
+            const description = document.getElementById('modal-help-description').value;
+            const specialization = document.getElementById('modal-help-specialization').value;
+            const contact = document.getElementById('modal-help-contact').value;
+
+            if(!unit || !description || !specialization || !contact) return alert("يرجى ملء جميع الحقول واختيار التخصص.");
+
+            try {
+                await addDoc(collection(db, "helpRequests"), { // UPDATED COLLECTION NAME
+                    unit, description, specialization, contact,
+                    author: currentUser.displayName,
+                    uid: currentUser.uid, 
+                    timestamp: serverTimestamp()
+                });
+                
+                document.getElementById('modal-help-unit').value = '';
+                document.getElementById('modal-help-description').value = '';
+                document.getElementById('modal-help-specialization').value = '';
+                document.getElementById('modal-help-contact').value = '';
+                
+                if(isModal) {
+                    const helpModal = bootstrap.Modal.getInstance(document.getElementById('helpModal'));
+                    if(helpModal) helpModal.hide();
+                }
+                
+                loadHelpRequests(); 
+                
+            } catch(err) { console.error(err); alert("حدث خطأ أثناء نشر طلب المساعدة."); }
+        };
+
+        function loadHelpRequests() {
+            const q = query(collection(db, "helpRequests"), orderBy("timestamp", "desc")); // UPDATED COLLECTION NAME
+            onSnapshot(q, async (snapshot) => {
+                const list = document.getElementById('help-requests-list'); // UPDATED ID
+                list.innerHTML = '';
+                
+                if (snapshot.empty) {
+                     list.innerHTML = '<div class="text-center mt-5 text-muted"><i class="fas fa-tasks fa-2x"></i><br>لا توجد طلبات مساعدة معروضة حالياً، انشر طلبك!</div>';
+                    return;
+                }
+
+                const requestPromises = snapshot.docs.map(async (docSnap) => {
+                    const request = docSnap.data();
+                    const date = request.timestamp ? request.timestamp.toDate().toLocaleDateString('ar-EG') : '';
+                    
+                    const authorProfile = await getUserProfile(request.uid); 
+                    const authorName = authorProfile.displayName || request.author; 
+                    const isVerified = authorProfile.isVerified;
+                    const verifiedBadge = isVerified ? 
+                        `<i class="fas fa-check-circle ms-1" style="color: #00acee; font-size: 0.9em;" title="حساب موثق"></i>` 
+                        : '';
+                        
+                    const initial = authorName ? authorName.charAt(0).toUpperCase() : '?';
+
+                    return `
+                        <div class="tech-card p-4 mb-3">
+                            <div class="post-header">
+                                <div class="user-avatar">${initial}</div>
+                                <div class="ms-3">
+                                    <h5 class="m-0 text-white">${authorName} ${verifiedBadge}</h5>
+                                    <small class="text-muted" style="font-size:0.75rem">${date}</small>
+                                </div>
+                            </div>
+                            
+                            <div class="specialization-badge mb-3"><i class="fas fa-graduation-cap me-1"></i> ${request.specialization}</div>
+
+                            <h4 class="text-success fw-bold mt-2 mb-3"><i class="fas fa-book me-2"></i> ${request.unit}</h4>
+                            <p class="text-light">${request.description}</p>
+                            
+                            <div class="mt-3 p-3 bg-dark rounded">
+                                <h6 class="text-info"><i class="fas fa-comments me-1"></i> للتواصل والمساعدة:</h6>
+                                <p class="mb-0 text-white fw-bold">${request.contact}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                const requestHtml = await Promise.all(requestPromises);
+                list.innerHTML = requestHtml.join('');
+            });
+        }
+        
+        // --- OPINIONS (unchanged) ---
+        
+        window.submitOpinion = async (isModal = false) => {
+            const text = document.getElementById('opinion-text-modal').value;
+            const rating = document.getElementById('opinion-rating-modal').value;
+            if(!text) return alert("يرجى كتابة رأيك");
+
+            try {
+                await addDoc(collection(db, "opinions"), {
+                    text, rating, author: currentUser.displayName, uid: currentUser.uid, timestamp: serverTimestamp()
+                });
+                alert("شكراً لرأيك");
+                
+                document.getElementById('opinion-text-modal').value = '';
+                document.getElementById('opinion-rating-modal').value = '5';
+                if(isModal) {
+                    const opinionModal = bootstrap.Modal.getInstance(document.getElementById('opinionModal'));
+                    if(opinionModal) opinionModal.hide();
+                }
+            } catch (error) {
+                 console.error("Error submitting opinion:", error);
+                 alert("حدث خطأ أثناء إرسال الرأي.");
+            }
+        };
+
+        function loadOpinions() {
+            onSnapshot(query(collection(db, "opinions"), orderBy("timestamp", "desc")), async snap => {
+                const list = document.getElementById('opinions-list');
+                list.innerHTML = '';
+                
+                if (snap.empty) {
+                    list.innerHTML = '<div class="col-12 text-center text-muted mt-3">لا توجد آراء سابقة حالياً.</div>';
+                    return;
+                }
+                
+                const opinionPromises = snap.docs.map(async d => {
+                    const o = d.data();
+                    
+                    const opinionAuthorProfile = await getUserProfile(o.uid);
+                    const opinionAuthorName = opinionAuthorProfile.displayName || o.author; 
+                    const isVerified = opinionAuthorProfile.isVerified;
+                    const verifiedBadge = isVerified ? 
+                        `<i class="fas fa-check-circle ms-1" style="color: #00acee; font-size: 0.8em;" title="حساب موثق"></i>` 
+                        : '';
+                        
+                    return `
+                        <div class="col-md-6 mb-3">
+                            <div class="tech-card p-3">
+                                <h6 class="text-info">${opinionAuthorName} ${verifiedBadge}</h6>
+                                <p class="small">${o.text}</p>
+                                <div class="text-warning">${'⭐'.repeat(o.rating)}</div>
+                            </div>
+                        </div>`;
+                });
+                
+                const opinionHtml = await Promise.all(opinionPromises);
+                list.innerHTML = opinionHtml.join('');
+            });
+        }
+
+        // --- Update Profile Data (UPDATED to handle Specialization) ---
+        window.updateProfileData = async (e) => {
+            e.preventDefault();
+            const newName = document.getElementById('edit-name').value;
+            const newSpecialization = document.getElementById('edit-specialization').value; // NEW
+            const successMsg = document.getElementById('profile-update-success');
+            successMsg.classList.add('hidden');
+
+            if(!newName || !newSpecialization) return alert("الاسم والتخصص لا يمكن أن يكونا فارغين.");
+
+            try {
+                // 1. تحديث الاسم في Auth
+                await updateProfile(currentUser, { displayName: newName });
+                
+                // 2. تحديث الاسم والتخصص في وثيقة المستخدم (Firestore)
+                const userRef = doc(db, "users", currentUser.uid);
+                await updateDoc(userRef, { 
+                    displayName: newName,
+                    specialization: newSpecialization // NEW: Update specialization
+                });
+                
+                // 3. تحديث الكاش المحلي
+                const profile = await getUserProfile(currentUser.uid); 
+                userProfileCache[currentUser.uid].displayName = newName;
+                userProfileCache[currentUser.uid].specialization = newSpecialization; // NEW
+                
+                // 4. تحديث الواجهة الرئيسية (Nav & Profile)
+                updateUserUI(currentUser, profile);
+                
+                // 5. إعادة تحميل جميع الأقسام لعكس الاسم والتخصص الجديد
+                loadPosts();
+                loadHelpRequests();
+                loadOpinions();
+                
+                successMsg.classList.remove('hidden');
+                setTimeout(() => successMsg.classList.add('hidden'), 3000);
+                
+            } catch(error) {
+                 console.error("Error updating profile:", error);
+                 alert("حدث خطأ أثناء تحديث الملف الشخصي.");
+            }
+        };
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

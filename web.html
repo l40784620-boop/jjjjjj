@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>لوحة تحكم المدير | Tech Admin</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Orbitron:wght@500;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+   
+
+    <style>
+
+        :root {
+
+            --primary-color: #00f3ff; /* Neon Cyan */
+
+            --secondary-color: #ff3366; /* Neon Red for Admin */
+
+            --bg-dark: #1f0b38; /* Darker Purple for Admin feel */
+
+            --bg-card: rgba(30, 10, 50, 0.85);
+
+            --text-light: #e2e8f0;
+
+        }
+
+
+
+        body {
+
+            background-color: var(--bg-dark);
+
+            color: var(--text-light);
+
+            font-family: 'Cairo', sans-serif;
+
+            background-image: radial-gradient(circle at 50% 10%, rgba(255, 51, 102, 0.1) 0%, transparent 20%);
+
+        }
+
+
+
+        h1, h2, h3, .brand-font {
+
+            font-family: 'Orbitron', sans-serif;
+
+        }
+
+
+
+        .admin-card {
+
+            background: var(--bg-card);
+
+            backdrop-filter: blur(10px);
+
+            border: 1px solid var(--secondary-color);
+
+            border-radius: 15px;
+
+            box-shadow: 0 0 20px rgba(255, 51, 102, 0.3);
+
+        }
+
+
+
+        .btn-admin {
+
+            background-color: var(--secondary-color);
+
+            border: none;
+
+            color: white;
+
+            font-weight: bold;
+
+            transition: all 0.3s;
+
+        }
+
+        .btn-admin:hover {
+
+            background-color: #ff5588;
+
+            box-shadow: 0 0 10px var(--secondary-color);
+
+        }
+
+       
+
+        .nav-link.active-admin {
+
+            color: var(--primary-color) !important;
+
+            border-bottom: 2px solid var(--primary-color);
+
+        }
+
+
+
+        /* Status Colors */
+
+        .status-verified { color: #00acee; }
+
+        .status-blocked { color: var(--secondary-color); font-weight: bold; }
+
+       
+
+        .hidden { display: none !important; }
+
+    </style>
+
+</head>
+
+<body>
+
+
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top hidden" id="admin-nav">
+
+        <div class="container">
+
+            <a class="navbar-brand brand-font" href="#"><i class="fas fa-screwdriver-wrench me-2" style="color: var(--secondary-color)"></i>لوحة المدير</a>
+
+            <div class="d-flex collapse navbar-collapse">
+
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    <li class="nav-item"><a class="nav-link active-admin" href="#" onclick="showAdminSection('posts-management', this)">إدارة المنشورات</a></li>
+
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showAdminSection('user-management', this)">إدارة المستخدمين</a></li>
+
+                </ul>
+
+                <div class="d-flex align-items-center">
+
+                    <span id="admin-email-display" class="text-warning me-3 small"></span>
+
+                    <button class="btn btn-sm btn-outline-light" id="admin-logout-btn">خروج</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+
+    <div class="container" id="admin-auth-container" style="margin-top: 100px;">
+
+        <div class="admin-card p-5 text-center mx-auto" style="max-width: 450px;">
+
+            <h3 class="mb-4" style="color: var(--secondary-color)"><i class="fas fa-user-shield me-2"></i>تسجيل دخول المدير</h3>
+
+            <form id="admin-login-form">
+
+                <input type="email" class="form-control mb-3" id="admin-login-email" placeholder="بريد المدير" required>
+
+                <input type="password" class="form-control mb-3" id="admin-login-password" placeholder="كلمة المرور" required>
+
+                <button type="submit" class="btn btn-admin w-100">دخول</button>
+
+            </form>
+
+            <p class="text-danger mt-3 small hidden" id="auth-error-message">ليس لديك صلاحية المدير</p>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="container hidden" id="admin-app-container" style="margin-top: 100px; padding-bottom: 50px;">
+
+       
+
+        <div id="posts-management">
+
+            <h2 class="mb-4"><i class="fas fa-clipboard-list me-2" style="color: var(--secondary-color)"></i>إدارة المنشورات</h2>
+
+            <div class="table-responsive admin-card p-3">
+
+                <table class="table table-dark table-striped table-hover">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>#ID</th>
+
+                            <th>العنوان</th>
+
+                            <th>الناشر</th>
+
+                            <th>التاريخ</th>
+
+                            <th>الإجراء</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="admin-posts-list">
+
+                        <tr><td colspan="5" class="text-center">جاري التحميل...</td></tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+
+        <div id="user-management" class="hidden">
+
+            <h2 class="mb-4 mt-5"><i class="fas fa-users-cog me-2" style="color: var(--secondary-color)"></i>إدارة المستخدمين</h2>
+
+            <div class="table-responsive admin-card p-3">
+
+                <table class="table table-dark table-striped table-hover">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>الاسم/البريد</th>
+
+                            <th>UID</th>
+
+                            <th>التوثيق</th>
+
+                            <th>الحالة</th>
+
+                            <th>الإجراءات</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="admin-users-list">
+
+                        <tr><td colspan="5" class="text-center">جاري التحميل...</td></tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+   
+
+    <script type="module">
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        import { getFirestore, collection, query, orderBy, onSnapshot, getDoc, doc, updateDoc, deleteDoc, getDocs, setDoc, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+
+
+        // Configuration (Use the same config from your main site)
+
+        const firebaseConfig = {
+
+            apiKey: "AIzaSyBNXh0QNPlOFWLVNcmUYlzyvdfPhPnHcAE",
+
+            authDomain: "talp-e7578.firebaseapp.com",
+
+            projectId: "talp-e7578",
+
+            storageBucket: "talp-e7578.firebasestorage.app",
+
+            messagingSenderId: "790637359024",
+
+            appId: "1:790637359024:web:a3925ad98e87d4cec9b075",
+
+            measurementId: "G-B019EHBYJQ"
+
+        };
+
+
+
+        const app = initializeApp(firebaseConfig);
+
+        const auth = getAuth(app);
+
+        const db = getFirestore(app);
+
+
+
+        // --- Core Admin Management (Admin List) ---
+
+        // A simple list of UIDs who are admins. This is the security key.
+
+        const ADMIN_UIDS = ["lNyntt2PYudPYhWezgh5woXSMOr2"]; // ** استبدل هذا بقائمة UIDs المدراء الحقيقية **
+
+
+
+        // --- UI Elements ---
+
+        const authContainer = document.getElementById('admin-auth-container');
+
+        const appContainer = document.getElementById('admin-app-container');
+
+        const adminNav = document.getElementById('admin-nav');
+
+        const authError = document.getElementById('auth-error-message');
+
+        let currentAdminUser = null;
+
+
+
+        // --- Auth & Access Control ---
+
+        onAuthStateChanged(auth, (user) => {
+
+            if (user && ADMIN_UIDS.includes(user.uid)) {
+
+                currentAdminUser = user;
+
+                authContainer.classList.add('hidden');
+
+                appContainer.classList.remove('hidden');
+
+                adminNav.classList.remove('hidden');
+
+                document.getElementById('admin-email-display').textContent = user.email;
+
+                loadAdminPosts();
+
+                loadUsersForAdmin();
+
+            } else {
+
+                currentAdminUser = null;
+
+                authContainer.classList.remove('hidden');
+
+                appContainer.classList.add('hidden');
+
+                adminNav.classList.add('hidden');
+
+                if (user) { // If user logged in but is not admin
+
+                    signOut(auth);
+
+                    authError.textContent = "لا تملك صلاحيات المدير.";
+
+                    authError.classList.remove('hidden');
+
+                }
+
+            }
+
+        });
+
+
+
+        document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+
+            e.preventDefault();
+
+            const email = document.getElementById('admin-login-email').value;
+
+            const password = document.getElementById('admin-login-password').value;
+
+            authError.classList.add('hidden');
+
+
+
+            try {
+
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+                if (!ADMIN_UIDS.includes(userCredential.user.uid)) {
+
+                    // Log out if not in the hardcoded list even after successful login
+
+                    await signOut(auth);
+
+                    throw new Error("ADMIN_NOT_AUTHORIZED");
+
+                }
+
+            } catch (error) {
+
+                authError.textContent = "خطأ في البيانات أو عدم صلاحية الدخول.";
+
+                authError.classList.remove('hidden');
+
+                console.error(error);
+
+            }
+
+        });
+
+
+
+        document.getElementById('admin-logout-btn').addEventListener('click', () => signOut(auth));
+
+       
+
+        // Navigation Handler
+
+        window.showAdminSection = (sectionId, element) => {
+
+            ['posts-management', 'user-management'].forEach(id => {
+
+                document.getElementById(id).classList.add('hidden');
+
+            });
+
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active-admin'));
+
+            element.classList.add('active-admin');
+
+        };
+
+       
+
+        // --- 1. POSTS MANAGEMENT ---
+
+       
+
+        function loadAdminPosts() {
+
+            const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+
+            onSnapshot(q, (snapshot) => {
+
+                const list = document.getElementById('admin-posts-list');
+
+                list.innerHTML = '';
+
+               
+
+                if (snapshot.empty) {
+
+                    list.innerHTML = '<tr><td colspan="5" class="text-center">لا توجد منشورات حالياً.</td></tr>';
+
+                    return;
+
+                }
+
+
+
+                snapshot.forEach((docSnap) => {
+
+                    const post = docSnap.data();
+
+                    const postId = docSnap.id;
+
+                    const date = post.timestamp ? post.timestamp.toDate().toLocaleString('ar-EG', { dateStyle: 'short' }) : '---';
+
+                   
+
+                    list.innerHTML += `
+
+                        <tr>
+
+                            <td>${postId.substring(0, 5)}...</td>
+
+                            <td>${post.title}</td>
+
+                            <td>${post.author}</td>
+
+                            <td>${date}</td>
+
+                            <td>
+
+                                <button class="btn btn-sm btn-danger me-2" onclick="window.deletePost('${postId}')">
+
+                                    <i class="fas fa-trash"></i> حذف
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                });
+
+            });
+
+        }
+
+       
+
+        window.deletePost = async (postId) => {
+
+            if (confirm('هل أنت متأكد من حذف هذا المنشور؟ لا يمكن التراجع عن هذا الإجراء.')) {
+
+                try {
+
+                    // Delete the main post document
+
+                    await deleteDoc(doc(db, "posts", postId));
+
+                   
+
+                    // Note: Need to manually delete the subcollection 'comments' if any exist in Firestore rules/functions
+
+                    // For client-side deletion, we skip subcollection to avoid excessive reads/writes (Admin should clear them manually or use Cloud Functions)
+
+                   
+
+                    alert('تم حذف المنشور بنجاح.');
+
+                } catch (error) {
+
+                    alert('خطأ في الحذف: ' + error.message);
+
+                    console.error("Error deleting post: ", error);
+
+                }
+
+            }
+
+        };
+
+
+
+        // --- 2. USERS MANAGEMENT ---
+
+       
+
+        // Helper function to get User Profile (we assume a 'users' collection exists)
+
+        async function getUserProfile(uid) {
+
+            const docRef = doc(db, "users", uid);
+
+            const docSnap = await getDoc(docRef);
+
+            return docSnap.exists() ? docSnap.data() : { isVerified: false, isBlocked: false };
+
+        }
+
+       
+
+        // Saves/Updates User Profile Status (Verification/Block)
+
+        async function setUserProfileStatus(uid, field, value) {
+
+            const docRef = doc(db, "users", uid);
+
+            // Use setDoc with { merge: true } to create the document if it doesn't exist, or update it
+
+            await setDoc(docRef, { [field]: value, uid: uid }, { merge: true });
+
+        }
+
+       
+
+        function loadUsersForAdmin() {
+
+            const list = document.getElementById('admin-users-list');
+
+            list.innerHTML = '<tr><td colspan="5" class="text-center"><div class="spinner-border text-info" role="status"></div> جاري تحميل المستخدمين...</td></tr>';
+
+           
+
+            // Note: Directly querying Auth users list is not possible from client side (security risk).
+
+            // We use Firestore's 'users' collection or fetch recent UIDs from 'posts'.
+
+            // Here we use a query to fetch all UIDs who have posted (for simplicity):
+
+           
+
+            // This is complex, so for simplicity we will rely on a pre-existing 'users' collection.
+
+            // **You MUST create a Firestore collection named 'users' and store each user's UID as the document ID.**
+
+            const q = query(collection(db, "users"), orderBy("uid", "asc"));
+
+            onSnapshot(q, async (snapshot) => {
+
+                list.innerHTML = '';
+
+               
+
+                if (snapshot.empty) {
+
+                    list.innerHTML = '<tr><td colspan="5" class="text-center">لا توجد بيانات مستخدمين إضافية.</td></tr>';
+
+                    return;
+
+                }
+
+
+
+                snapshot.forEach(async (docSnap) => {
+
+                    const profile = docSnap.data();
+
+                    const uid = docSnap.id;
+
+                   
+
+                    // We need to fetch the email/displayName from Auth or rely on the stored profile data
+
+                    // For this example, we assume profile has an email/displayName field added on registration/login.
+
+                    // In a production app, you might need a Cloud Function here.
+
+                   
+
+                    const isVerified = profile.isVerified === true;
+
+                    const isBlocked = profile.isBlocked === true;
+
+
+
+                    list.innerHTML += `
+
+                        <tr id="row-${uid}">
+
+                            <td>${profile.displayName || '---'} <br><small class="text-muted">${profile.email || '---'}</small></td>
+
+                            <td>${uid.substring(0, 8)}...</td>
+
+                            <td>
+
+                                <span class="${isVerified ? 'status-verified' : 'text-danger'}">
+
+                                    ${isVerified ? '<i class="fas fa-check-circle"></i> موثق' : 'غير موثق'}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <span class="${isBlocked ? 'status-blocked' : 'text-success'}">
+
+                                    ${isBlocked ? 'محظور' : 'نشط'}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <button class="btn btn-sm ${isVerified ? 'btn-warning' : 'btn-success'} me-2" onclick="window.toggleVerification('${uid}', ${isVerified})">
+
+                                    ${isVerified ? 'إلغاء التوثيق' : 'توثيق'}
+
+                                </button>
+
+                                <button class="btn btn-sm ${isBlocked ? 'btn-success' : 'btn-danger'}" onclick="window.toggleBlock('${uid}', ${isBlocked})">
+
+                                    ${isBlocked ? 'فك الحظر' : 'حظر'}
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                });
+
+            });
+
+        }
+
+       
+
+        // --- 3. ADMIN ACTIONS ---
+
+
+
+        // Toggle Verification
+
+        window.toggleVerification = async (uid, isCurrentlyVerified) => {
+
+            if (confirm(`هل أنت متأكد من ${isCurrentlyVerified ? 'إلغاء توثيق' : 'توثيق'} المستخدم ${uid.substring(0, 5)}...؟`)) {
+
+                try {
+
+                    await setUserProfileStatus(uid, 'isVerified', !isCurrentlyVerified);
+
+                    alert('تم تغيير حالة التوثيق بنجاح.');
+
+                } catch (e) {
+
+                    alert('فشل في التحديث: ' + e.message);
+
+                }
+
+            }
+
+        };
+
+
+
+        // Toggle Block
+
+        window.toggleBlock = async (uid, isCurrentlyBlocked) => {
+
+            if (confirm(`هل أنت متأكد من ${isCurrentlyBlocked ? 'فك حظر' : 'حظر'} المستخدم ${uid.substring(0, 5)}...؟`)) {
+
+                try {
+
+                    await setUserProfileStatus(uid, 'isBlocked', !isCurrentlyBlocked);
+
+                    alert('تم تغيير حالة الحظر بنجاح.');
+
+                   
+
+                    // Important: For a real app, you need Cloud Functions to revoke user session/Auth token here.
+
+                    // Client-side code cannot completely block a user from Auth.
+
+                   
+
+                } catch (e) {
+
+                    alert('فشل في التحديث: ' + e.message);
+
+                }
+
+            }
+
+        };
+
+       
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
